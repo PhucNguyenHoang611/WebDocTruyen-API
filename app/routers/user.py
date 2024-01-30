@@ -16,4 +16,4 @@ def login_user(req: LoginRequest):
 
 @router.post("/register")
 def register_user(user: User):
-    return register(user.dict())
+    return register(user)

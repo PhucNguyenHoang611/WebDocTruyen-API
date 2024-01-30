@@ -36,25 +36,33 @@ def login(email: str, password: str):
     except ClientError as e:
         return JSONResponse(content=e.response["error"], status_code=500)
 
-def register(user: dict):
+def register(user: User):
     try:
         response = table.query(
             IndexName="EmailIndex",
-            KeyConditionExpression=Key("email").eq(user["email"])
+            KeyConditionExpression=Key("email").eq(user.email)
         )
         items = response["Items"]
 
         if items:
             return JSONResponse(content="Email already exists", status_code=409)
         else:
-            user["password"] = get_password_hash(user["password"])
+            user.password = get_password_hash(user.password)
             item = User(
-                email=user["email"],
-                password=user["password"],
-                fullname=user["fullname"]).dict()
+                email=user.email,
+                password=user.password,
+                fullname=user.fullname).dict()
 
             table.put_item(Item=item)
-            return JSONResponse(content=item, status_code=201)
+            return JSONResponse(
+                content={
+                    "token": generate_token(item["email"]),
+                    "email": item["email"],
+                    "fullname": item["fullname"]
+                },
+                status_code=201
+            )
+            # return JSONResponse(content=item, status_code=201)
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
 
