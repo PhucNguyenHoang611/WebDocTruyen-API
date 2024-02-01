@@ -1,6 +1,6 @@
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Request, Depends
 from models.user import User
-from services.user import login, register, send_verification_code, verify_email_address
+from services.user import login, register, send_verification_code, verify_email_address, forget_pwd, reset_pwd, change_pwd
 from middleware.auth import validate_token
 from pydantic import BaseModel
 
@@ -9,6 +9,16 @@ router = APIRouter()
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    totp: str
+    new_password: str
+
+class ChangePasswordRequest(BaseModel):
+    email: str
+    old_password: str
+    new_password: str
 
 @router.post("/login")
 def login_user(req: LoginRequest):
@@ -23,5 +33,17 @@ def send_verification_email(background_tasks: BackgroundTasks, email: str):
     return send_verification_code(background_tasks, email)
 
 @router.get("/verifyEmail/", include_in_schema=False)
-def verify_email(email: str, totp: str):
-    return verify_email_address(email, totp)
+def verify_email(request: Request, email: str, totp: str):
+    return verify_email_address(request, email, totp)
+
+@router.post("/forgetPassword/{email}")
+def forget_password(background_tasks: BackgroundTasks, email: str):
+    return forget_pwd(background_tasks, email)
+
+@router.post("/resetPassword")
+def reset_password(request: ResetPasswordRequest):
+    return reset_pwd(request.email, request.totp, request.new_password)
+
+@router.post("/changePassword", dependencies=[Depends(validate_token)])
+def change_password(request: ChangePasswordRequest):
+    return change_pwd(request.email, request.old_password, request.new_password)

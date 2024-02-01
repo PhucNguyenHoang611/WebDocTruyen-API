@@ -61,3 +61,33 @@ def generate_token(email: Union[str, Any]) -> str:
     }
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
     return encoded_jwt
+
+# Admin token
+def validate_token_admin(http_authorization_credentials=Depends(reuseable_oauth2)) -> str:
+    try:
+        payload = jwt.decode(http_authorization_credentials.credentials, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+
+        if payload.get("exp") < datetime.utcnow().timestamp():
+            raise HTTPException(status_code=403, detail="Token has expired")
+
+        email = payload.get("email")
+        password = payload.get("password")
+
+        if email == "admin@gmail.com" and password == "admin12345":
+            return True
+        else:
+            raise HTTPException(status_code=403, detail="Invalid user")
+    except (jwt.PyJWTError, ValidationError):
+        raise HTTPException(status_code=403, detail="Could not validate credentials")
+
+def generate_token_admin(email: Union[str, Any], password: Union[str, Any]) -> str:
+    expire = datetime.utcnow() + timedelta(
+        seconds = 60 * 60 * 24 * 3 # Expired after 3 days
+    )
+    to_encode = {
+        "exp": expire,
+        "email": email,
+        "password": password
+    }
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+    return encoded_jwt

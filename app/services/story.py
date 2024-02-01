@@ -72,7 +72,7 @@ def update_story(story: Story):
         if "Item" not in item:
             return JSONResponse(content="Story not found", status_code=404)
         else:
-            response = table.update_item(
+            table.update_item(
                 Key={
                     "story_id": story.story_id
                 },
@@ -104,7 +104,7 @@ def update_story(story: Story):
                     "#total_votes": "total_votes"
                 }
             )
-            return JSONResponse(content=response, status_code=200)
+            return JSONResponse(content="Update story successfully", status_code=200)
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
     
@@ -119,11 +119,11 @@ def delete_story(id: str):
         if "Item" not in item:
             return JSONResponse(content="Story not found", status_code=404)
         else:
-            response = table.delete_item(
+            table.delete_item(
                 Key={
                     "story_id": id
                 }
             )
-            return JSONResponse(content=response, status_code=200)
+            return JSONResponse(content="Delete story successfully", status_code=200)
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
