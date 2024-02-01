@@ -8,8 +8,8 @@ class Story(BaseModel):
     synopsis: Optional[str] = None
     cover_image_url: str
     author: str
-    genres: str # List[str]
-    tags: str
+    genres: List[str]
+    tags: List[str]
     chapters_count: int = 0
     status: str
     views: int = 0
