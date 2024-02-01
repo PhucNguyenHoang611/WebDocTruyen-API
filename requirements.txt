@@ -11,6 +11,7 @@ cryptography
 ecdsa
 exceptiongroup
 fastapi
+fastapi-mail
 Flask
 future
 h11
@@ -27,6 +28,7 @@ pycparser
 pycryptodome
 pydantic
 PyJWT
+pyotp
 python-dateutil
 python-dotenv
 python-jose

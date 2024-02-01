@@ -33,14 +33,6 @@ tables = [
             {
                 "AttributeName": "author",
                 "AttributeType": "S"
-            },
-            {
-                "AttributeName": "genres",
-                "AttributeType": "S"
-            },
-            {
-                "AttributeName": "tags",
-                "AttributeType": "S"
             }
         ],
         "GlobalSecondaryIndexes": [
@@ -91,54 +83,6 @@ tables = [
                         "total_votes"
                     ]
                 }
-            },
-            {
-                "IndexName": "GenresIndex",
-                "KeySchema": [
-                    {
-                        "AttributeName": "genres",
-                        "KeyType": "HASH"
-                    }
-                ],
-                "Projection": {
-                    "ProjectionType": "INCLUDE",
-                    "NonKeyAttributes": [
-                        "title",
-                        "synopsis",
-                        "cover_image_url",
-                        "author",
-                        "tags",
-                        "chapters_count",
-                        "status",
-                        "views",
-                        "rating",
-                        "total_votes"
-                    ]
-                }
-            },
-            {
-                "IndexName": "TagsIndex",
-                "KeySchema": [
-                    {
-                        "AttributeName": "tags",
-                        "KeyType": "HASH"
-                    }
-                ],
-                "Projection": {
-                    "ProjectionType": "INCLUDE",
-                    "NonKeyAttributes": [
-                        "title",
-                        "synopsis",
-                        "cover_image_url",
-                        "author",
-                        "genres",
-                        "chapters_count",
-                        "status",
-                        "views",
-                        "rating",
-                        "total_votes"
-                    ]
-                }
             }
         ]
     },
@@ -178,7 +122,8 @@ tables = [
                     "NonKeyAttributes": [
                         "password",
                         "fullname",
-                        "is_verified"
+                        "is_verified",
+                        "verification_key"
                     ]
                 }
             },
@@ -195,7 +140,8 @@ tables = [
                     "NonKeyAttributes": [
                         "email",
                         "password",
-                        "is_verified"
+                        "is_verified",
+                        "verification_key"
                     ]
                 }
             }

@@ -2,7 +2,6 @@ from config.database import dynamodb
 from models.story import Story
 from fastapi.responses import JSONResponse
 from botocore.exceptions import ClientError
-from boto3.dynamodb.conditions import Key
 
 table = dynamodb.Table("Stories")
 
