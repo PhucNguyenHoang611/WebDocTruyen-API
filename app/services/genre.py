@@ -11,6 +11,7 @@ def get_genres():
             AttributesToGet=[
                 "genre_id",
                 "name",
+                "slug",
                 "description"
             ]
         )
@@ -36,6 +37,7 @@ def create_genre(genre: Genre):
     try:
         item = Genre(
             name=genre.name,
+            slug=genre.slug,
             description=genre.description
         ).dict()
 
@@ -57,13 +59,15 @@ def update_genre(genre: Genre):
                 Key={
                     "genre_id": genre.genre_id
                 },
-                UpdateExpression="set #name=:name, #description=:description",
+                UpdateExpression="set #name=:name, #slug=:slug, #description=:description",
                 ExpressionAttributeNames={
                     "#name": "name",
+                    "#slug": "slug",
                     "#description": "description"
                 },
                 ExpressionAttributeValues={
                     ":name": genre.name,
+                    ":slug": genre.slug,
                     ":description": genre.description
                 }
             )

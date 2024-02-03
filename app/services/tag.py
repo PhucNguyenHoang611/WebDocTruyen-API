@@ -11,6 +11,7 @@ def get_tags():
             AttributesToGet=[
                 "tag_id",
                 "name",
+                "slug",
                 "description"
             ]
         )
@@ -36,6 +37,7 @@ def create_tag(tag: Tag):
     try:
         item = Tag(
             name=tag.name,
+            slug=tag.slug,
             description=tag.description
         ).dict()
 
@@ -57,13 +59,15 @@ def update_tag(tag: Tag):
                 Key={
                     "tag_id": tag.tag_id
                 },
-                UpdateExpression="set #name=:name, #description=:description",
+                UpdateExpression="set #name=:name, #slug=:slug, #description=:description",
                 ExpressionAttributeNames={
                     "#name": "name",
+                    "#slug": "slug",
                     "#description": "description"
                 },
                 ExpressionAttributeValues={
                     ":name": tag.name,
+                    ":slug": tag.slug,
                     ":description": tag.description
                 }
             )

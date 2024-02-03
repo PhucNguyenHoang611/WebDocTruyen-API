@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
-class FavoriteStories(BaseModel):
+class FavoriteStory(BaseModel):
     user_id: str
     story_id: str
