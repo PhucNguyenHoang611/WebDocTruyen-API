@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from models.viewed_chapter import ViewedChapter
-from services.viewed_chapter import get_viewed_chapters, create_viewed_chapter, delete_viewed_chapter, delete_viewed_chapters
+from services.viewed_chapter import get_viewed_chapters, get_viewed_chapters_by_story, create_viewed_chapter, delete_viewed_chapter, delete_viewed_chapters
 from middleware.auth import validate_token
 
 router = APIRouter()
@@ -8,6 +8,10 @@ router = APIRouter()
 @router.get("/getViewedChapters/{user_id}", dependencies=[Depends(validate_token)])
 def get_viewed_chapters_by_user_id(user_id: str):
     return get_viewed_chapters(user_id)
+
+@router.get("/getViewedChaptersByStory/{user_id}/{story_id}", dependencies=[Depends(validate_token)])
+def get_viewed_chapters_by_user_id_and_story_id(user_id: str, story_id: str):
+    return get_viewed_chapters_by_story(user_id, story_id)
 
 @router.post("/createViewedChapter", dependencies=[Depends(validate_token)])
 def create_new_viewed_chapter(viewed_chapter: ViewedChapter):

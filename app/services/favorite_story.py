@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 
 table = dynamodb.Table("FavoriteStories")
+table_stories = dynamodb.Table("Stories")
 
 def get_favorite_stories(user_id: str):
     try:
@@ -12,6 +13,15 @@ def get_favorite_stories(user_id: str):
             KeyConditionExpression=Key("user_id").eq(user_id),
             ProjectionExpression="story_id"
         )
+
+        for item in response["Items"]:
+            story = table_stories.get_item(
+                Key={
+                    "story_id": item["story_id"]
+                }
+            )
+            item["story_details"] = story["Item"]
+
         return response["Items"]
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)

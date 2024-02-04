@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from botocore.exceptions import ClientError
 
 table = dynamodb.Table("Stories")
+table_genres = dynamodb.Table("Genres")
+table_tags = dynamodb.Table("Tags")
 
 def get_stories():
     try:
@@ -22,6 +24,28 @@ def get_stories():
                 "rating",
                 "total_votes"]
         )
+
+        for story in response["Items"]:
+            genres = []
+            for genre_id in story["genres"]:
+                genre = table_genres.get_item(
+                    Key={
+                        "genre_id": genre_id
+                    }
+                )
+                genres.append(genre["Item"])
+            story["genres"] = genres
+
+            tags = []
+            for tag_id in story["tags"]:
+                tag = table_tags.get_item(
+                    Key={
+                        "tag_id": tag_id
+                    }
+                )
+                tags.append(tag["Item"])
+            story["tags"] = tags
+
         return response["Items"]
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
@@ -34,6 +58,26 @@ def get_story(id: str):
             }
         )
         if "Item" in response:
+            genres = []
+            for genre_id in response["Item"]["genres"]:
+                genre = table_genres.get_item(
+                    Key={
+                        "genre_id": genre_id
+                    }
+                )
+                genres.append(genre["Item"])
+            response["Item"]["genres"] = genres
+
+            tags = []
+            for tag_id in response["Item"]["tags"]:
+                tag = table_tags.get_item(
+                    Key={
+                        "tag_id": tag_id
+                    }
+                )
+                tags.append(tag["Item"])
+            response["Item"]["tags"] = tags
+
             return response["Item"]
         else:
             return JSONResponse(content="Story not found", status_code=404)
