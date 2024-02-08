@@ -56,7 +56,8 @@ tables = [
                         "status",
                         "views",
                         "rating",
-                        "total_votes"
+                        "total_votes",
+                        "created_at"
                     ]
                 }
             },
@@ -80,7 +81,8 @@ tables = [
                         "status",
                         "views",
                         "rating",
-                        "total_votes"
+                        "total_votes",
+                        "created_at"
                     ]
                 }
             }
@@ -122,6 +124,7 @@ tables = [
                     "NonKeyAttributes": [
                         "password",
                         "fullname",
+                        "role",
                         "is_verified",
                         "verification_key"
                     ]
@@ -140,6 +143,7 @@ tables = [
                     "NonKeyAttributes": [
                         "email",
                         "password",
+                        "role",
                         "is_verified",
                         "verification_key"
                     ]
@@ -211,7 +215,8 @@ tables = [
                     "NonKeyAttributes": [
                         "chapter_number",
                         "title",
-                        "content_url"
+                        "content_url",
+                        "created_at"
                     ]
                 }
             }
@@ -264,6 +269,164 @@ tables = [
             }
         ],
         "GlobalSecondaryIndexes": []
+    },
+    {
+        "TableName": "Ratings",
+        "KeySchema": [
+            {
+                "AttributeName": "rating_id",
+                "KeyType": "HASH"
+            }
+        ],
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "rating_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "user_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "story_id",
+                "AttributeType": "S"
+            }
+        ],
+        "GlobalSecondaryIndexes": [
+            {
+                "IndexName": "UserIndex",
+                "KeySchema": [
+                    {
+                        "AttributeName": "user_id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "INCLUDE",
+                    "NonKeyAttributes": [
+                        "story_id",
+                        "rating",
+                        "content",
+                        "time"
+                    ]
+                }
+            },
+            {
+                "IndexName": "StoryIndex",
+                "KeySchema": [
+                    {
+                        "AttributeName": "story_id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "INCLUDE",
+                    "NonKeyAttributes": [
+                        "user_id",
+                        "rating",
+                        "content",
+                        "time"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "TableName": "Comments",
+        "KeySchema": [
+            {
+                "AttributeName": "comment_id",
+                "KeyType": "HASH"
+            }
+        ],
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "comment_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "user_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "story_id",
+                "AttributeType": "S"
+            }
+        ],
+        "GlobalSecondaryIndexes": [
+            {
+                "IndexName": "UserIndex",
+                "KeySchema": [
+                    {
+                        "AttributeName": "user_id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "INCLUDE",
+                    "NonKeyAttributes": [
+                        "story_id",
+                        "content",
+                        "time"
+                    ]
+                }
+            },
+            {
+                "IndexName": "StoryIndex",
+                "KeySchema": [
+                    {
+                        "AttributeName": "story_id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "INCLUDE",
+                    "NonKeyAttributes": [
+                        "user_id",
+                        "content",
+                        "time"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "TableName": "Responses",
+        "KeySchema": [
+            {
+                "AttributeName": "response_id",
+                "KeyType": "HASH"
+            }
+        ],
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "response_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "parent_id",
+                "AttributeType": "S"
+            }
+        ],
+        "GlobalSecondaryIndexes": [
+            {
+                "IndexName": "ParentIndex",
+                "KeySchema": [
+                    {
+                        "AttributeName": "parent_id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "INCLUDE",
+                    "NonKeyAttributes": [
+                        "user_id",
+                        "content",
+                        "time"
+                    ]
+                }
+            }
+        ]
     }
 ]
 

@@ -22,7 +22,8 @@ def get_stories():
                 "status",
                 "views",
                 "rating",
-                "total_votes"]
+                "total_votes",
+                "created_at"]
         )
 
         for story in response["Items"]:

@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 from config.database import dynamodb
 from config.email.send_email import send_confirmation_email, send_forget_password_email
 
@@ -13,11 +16,14 @@ from middleware.password import verify_password, get_password_hash
 
 from utils.model_utils import generate_totp, verify_totp, generate_verification_key
 
+base_dir = Path(__file__).parent.parent.parent
+load_dotenv(base_dir.joinpath(".env"))
+
 table = dynamodb.Table("Users")
 
 def login(email: str, password: str):
     try:
-        if email == "admin@gmail.com" and password == "admin12345":
+        if email == os.getenv("ADMIN_EMAIL") and password == os.getenv("ADMIN_PASSWORD"):
             return JSONResponse(
                 content={
                     "token": generate_token_admin(email, password),
@@ -67,7 +73,8 @@ def register(background_tasks: BackgroundTasks, user: User):
             item = User(
                 email=user.email,
                 password=user.password,
-                fullname=user.fullname).dict()
+                fullname=user.fullname,
+                role="User").dict()
 
             table.put_item(Item=item)
 

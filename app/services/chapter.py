@@ -11,7 +11,7 @@ def get_chapters(story_id: str):
         response = table.query(
             IndexName="StoryIndex",
             KeyConditionExpression=Key("story_id").eq(story_id),
-            ProjectionExpression="chapter_id, chapter_number, title, content_url"
+            ProjectionExpression="chapter_id, chapter_number, title, content_url, created_at"
         )
         return response["Items"]
     except ClientError as e:

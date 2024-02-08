@@ -6,5 +6,6 @@ class User(BaseModel):
     email: str
     password: str
     fullname: str
+    role: str
     is_verified: bool = False
     verification_key: str = Field(default_factory=generate_verification_key)

@@ -62,7 +62,7 @@ def generate_token(email: Union[str, Any]) -> str:
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
-# Admin token
+# Token for Admin
 def validate_token_admin(http_authorization_credentials=Depends(reuseable_oauth2)) -> str:
     try:
         payload = jwt.decode(http_authorization_credentials.credentials, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
@@ -73,7 +73,7 @@ def validate_token_admin(http_authorization_credentials=Depends(reuseable_oauth2
         email = payload.get("email")
         password = payload.get("password")
 
-        if email == "admin@gmail.com" and password == "admin12345":
+        if email == os.getenv("ADMIN_EMAIL") and password == os.getenv("ADMIN_PASSWORD"):
             return True
         else:
             raise HTTPException(status_code=403, detail="Invalid user")
