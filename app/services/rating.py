@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from botocore.exceptions import ClientError
 
 table = dynamodb.Table("Ratings")
+table_stories = dynamodb.Table("Stories")
 
 def get_ratings(story_id: str):
     try:
@@ -49,6 +50,8 @@ def create_rating(rating: Rating):
         ).dict()
 
         table.put_item(Item=item)
+        update_story_rating(rating.story_id)
+        
         return JSONResponse(content=item, status_code=201)
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
@@ -97,5 +100,41 @@ def delete_rating(id: str):
             return JSONResponse(content="Delete rating successfully", status_code=200)
         else:
             return JSONResponse(content="Rating not found", status_code=404)
+    except ClientError as e:
+        return JSONResponse(content=e.response["Error"], status_code=500)
+    
+def update_story_rating(story_id: str):
+    try:
+        response = table.query(
+            IndexName="StoryIndex",
+            KeyConditionExpression="#story_id=:story_id",
+            ExpressionAttributeNames={
+                "#story_id": "story_id"
+            },
+            ExpressionAttributeValues={
+                ":story_id": story_id
+            },
+            ProjectionExpression="rating"
+        )
+        ratings = response["Items"]
+
+        total_rating = 0
+        for rating in ratings:
+            total_rating += rating["rating"]
+        average_rating = total_rating / len(ratings)
+
+        table_stories.update_item(
+            Key={
+                "story_id": story_id
+            },
+            UpdateExpression="set #rating=:rating",
+            ExpressionAttributeNames={
+                "#rating": "rating"
+            },
+            ExpressionAttributeValues={
+                ":rating": average_rating
+            }
+        )
+        return JSONResponse(content="Update story rating successfully", status_code=200)
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)

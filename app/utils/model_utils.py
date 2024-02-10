@@ -9,6 +9,11 @@ def generate_id():
 
 def generate_date():
     now = datetime.now()
+    iso_datetime = now.isoformat()
+    return str(iso_datetime)
+
+def generate_formatted_date():
+    now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     return str(dt_string)
 

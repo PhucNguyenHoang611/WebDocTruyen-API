@@ -17,6 +17,23 @@ def get_chapters(story_id: str):
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
     
+def get_latest_chapter(story_id: str):
+    try:
+        response = table.query(
+            IndexName="StoryIndex",
+            KeyConditionExpression=Key("story_id").eq(story_id),
+            Limit=1,
+            ScanIndexForward=False,
+            ProjectionExpression="chapter_id, chapter_number, title, content_url, created_at"
+        )
+
+        if "Items" in response and len(response["Items"]) > 0:
+            return response["Items"][0]
+        else:
+            return JSONResponse(content="Chapter not found", status_code=404)
+    except ClientError as e:
+        return JSONResponse(content=e.response["Error"], status_code=500)
+    
 def get_chapter(id: str):
     try:
         response = table.get_item(
