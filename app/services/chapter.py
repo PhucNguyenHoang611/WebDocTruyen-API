@@ -22,12 +22,11 @@ def get_latest_chapter(story_id: str):
         response = table.query(
             IndexName="StoryIndex",
             KeyConditionExpression=Key("story_id").eq(story_id),
-            Limit=1,
-            ScanIndexForward=False,
             ProjectionExpression="chapter_id, chapter_number, title, content_url, created_at"
         )
 
         if "Items" in response and len(response["Items"]) > 0:
+            response["Items"].sort(key=lambda x: x["created_at"], reverse=True)
             return response["Items"][0]
         else:
             return JSONResponse(content="Chapter not found", status_code=404)

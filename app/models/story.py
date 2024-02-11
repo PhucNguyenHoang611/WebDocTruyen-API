@@ -13,6 +13,6 @@ class Story(BaseModel):
     chapters_count: int = 0
     status: str
     views: int = 0
-    rating: int = 0
+    rating: float = 0
     total_votes: int = 0
     created_at: str = Field(default_factory=generate_date)

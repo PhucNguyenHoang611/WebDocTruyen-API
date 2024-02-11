@@ -15,8 +15,7 @@ def get_comments(story_id: str):
             },
             ExpressionAttributeValues={
                 ":story_id": story_id
-            },
-            ProjectionExpression="comment_id, user_id, content, time"
+            }
         )
         return response["Items"]
     except ClientError as e:
@@ -32,8 +31,7 @@ def get_user_comments(user_id: str):
             },
             ExpressionAttributeValues={
                 ":user_id": user_id
-            },
-            ProjectionExpression="comment_id, story_id, content, time"
+            }
         )
         return response["Items"]
     except ClientError as e:

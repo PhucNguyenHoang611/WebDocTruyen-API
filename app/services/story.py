@@ -2,6 +2,7 @@ from config.database import dynamodb
 from models.story import Story
 from fastapi.responses import JSONResponse
 from botocore.exceptions import ClientError
+from decimal import Decimal
 
 table = dynamodb.Table("Stories")
 table_genres = dynamodb.Table("Genres")
@@ -95,14 +96,27 @@ def create_story(story: Story):
             genres=story.genres,
             tags=story.tags,
             chapters_count=story.chapters_count,
-            status=story.status,
-            views=story.views,
-            rating=story.rating,
-            total_votes=story.total_votes
+            status=story.status
         ).dict()
 
+        item["rating"] = Decimal(str(item["rating"]))
         table.put_item(Item=item)
-        return JSONResponse(content=item, status_code=201)
+        
+        return JSONResponse(content={
+            "story_id": item["story_id"],
+            "title": item["title"],
+            "synopsis": item["synopsis"],
+            "cover_image_url": item["cover_image_url"],
+            "author": item["author"],
+            "genres": item["genres"],
+            "tags": item["tags"],
+            "chapters_count": item["chapters_count"],
+            "status": item["status"],
+            "views": item["views"],
+            "rating": 0,
+            "total_votes": item["total_votes"],
+            "created_at": item["created_at"]
+        }, status_code=201)
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
     
@@ -132,7 +146,7 @@ def update_story(story: Story):
                     ":chapters_count": story.chapters_count,
                     ":status": story.status,
                     ":views": story.views,
-                    ":rating": story.rating,
+                    ":rating": Decimal(str(story.rating)),
                     ":total_votes": story.total_votes
                 },
                 ExpressionAttributeNames={

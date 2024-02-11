@@ -5,6 +5,6 @@ class Rating(BaseModel):
     rating_id: str = Field(default_factory=generate_id)
     user_id: str
     story_id: str
-    rating: int
+    rating: float
     content: str
     time: str = Field(default_factory=generate_date)

@@ -8,15 +8,14 @@ table = dynamodb.Table("Responses")
 def get_responses(parent_id: str):
     try:
         response = table.query(
-            IndexName="CommentIndex",
+            IndexName="ParentIndex",
             KeyConditionExpression="#parent_id=:parent_id",
             ExpressionAttributeNames={
                 "#parent_id": "parent_id"
             },
             ExpressionAttributeValues={
                 ":parent_id": parent_id
-            },
-            ProjectionExpression="response_id, user_id, content, time"
+            }
         )
         return response["Items"]
     except ClientError as e:
