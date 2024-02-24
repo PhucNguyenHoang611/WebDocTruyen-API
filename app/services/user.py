@@ -47,7 +47,9 @@ def login(email: str, password: str):
                     content={
                         "token": generate_token(email),
                         "email": item["email"],
-                        "fullname": item["fullname"]
+                        "fullname": item["fullname"],
+                        "gender": item["gender"],
+                        "year_of_birth": item["year_of_birth"]
                     },
                     status_code=200
                 )
@@ -74,6 +76,8 @@ def register(background_tasks: BackgroundTasks, user: User):
                 email=user.email,
                 password=user.password,
                 fullname=user.fullname,
+                gender=user.gender,
+                year_of_birth=user.year_of_birth,
                 role="User").dict()
 
             table.put_item(Item=item)
@@ -217,6 +221,39 @@ def change_pwd(email: str, old_password: str, new_password: str):
                 return JSONResponse(content="Password has been changed", status_code=200)
             else:
                 return JSONResponse(content="Invalid old password", status_code=401)
+        else:
+            return JSONResponse(content="User not found", status_code=404)
+    except ClientError as e:
+        return JSONResponse(content=e.response["Error"], status_code=500)
+
+# Update user information
+def update_user(email: str, user: User):
+    try:
+        response = table.query(
+            IndexName="EmailIndex",
+            KeyConditionExpression=Key("email").eq(email)
+        )
+        items = response["Items"]
+
+        if items:
+            item = items[0]
+
+            table.update_item(
+                Key={"user_id": item["user_id"]},
+                UpdateExpression="set #fullname=:fullname, #gender=:gender, #year_of_birth=:year_of_birth",
+                ExpressionAttributeValues={
+                    ":fullname": user.fullname,
+                    ":gender": user.gender,
+                    ":year_of_birth": user.year_of_birth
+                },
+                ExpressionAttributeNames={
+                    "#fullname": "fullname",
+                    "#gender": "gender",
+                    "#year_of_birth": "year_of_birth"
+                }
+            )
+
+            return JSONResponse(content="Update user information successfully", status_code=200)
         else:
             return JSONResponse(content="User not found", status_code=404)
     except ClientError as e:

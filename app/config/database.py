@@ -124,6 +124,8 @@ tables = [
                     "NonKeyAttributes": [
                         "password",
                         "fullname",
+                        "gender",
+                        "year_of_birth",
                         "role",
                         "is_verified",
                         "verification_key"
@@ -143,6 +145,8 @@ tables = [
                     "NonKeyAttributes": [
                         "email",
                         "password",
+                        "gender",
+                        "year_of_birth",
                         "role",
                         "is_verified",
                         "verification_key"

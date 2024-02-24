@@ -1,6 +1,6 @@
 from fastapi import APIRouter, BackgroundTasks, Request, Depends
 from models.user import User
-from services.user import login, register, send_verification_code, verify_email_address, forget_pwd, reset_pwd, change_pwd
+from services.user import login, register, send_verification_code, verify_email_address, forget_pwd, reset_pwd, change_pwd, update_user
 from middleware.auth import validate_token
 from pydantic import BaseModel
 
@@ -47,3 +47,7 @@ def reset_password(request: ResetPasswordRequest):
 @router.post("/changePassword", dependencies=[Depends(validate_token)])
 def change_password(request: ChangePasswordRequest):
     return change_pwd(request.email, request.old_password, request.new_password)
+
+@router.put("/updateUserInformation/{email}", dependencies=[Depends(validate_token)])
+def update_user_information(email: str, user: User):
+    return update_user(email, user)
