@@ -10,6 +10,13 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    fullname: str
+    gender: str
+    year_of_birth: int
+
 class ResetPasswordRequest(BaseModel):
     email: str
     totp: str
@@ -20,13 +27,18 @@ class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str
 
+class UpdateUserInformationRequest(BaseModel):
+    fullname: str
+    gender: str
+    year_of_birth: int
+
 @router.post("/login")
 def login_user(req: LoginRequest):
     return login(req.email, req.password)
 
 @router.post("/register")
-def register_user(background_tasks: BackgroundTasks, user: User):
-    return register(background_tasks, user)
+def register_user(background_tasks: BackgroundTasks, req: RegisterRequest):
+    return register(background_tasks, req.email, req.password, req.fullname, req.gender, req.year_of_birth)
 
 @router.post("/sendVerificationEmail/{email}")
 def send_verification_email(background_tasks: BackgroundTasks, email: str):
@@ -49,5 +61,5 @@ def change_password(request: ChangePasswordRequest):
     return change_pwd(request.email, request.old_password, request.new_password)
 
 @router.put("/updateUserInformation/{email}", dependencies=[Depends(validate_token)])
-def update_user_information(email: str, user: User):
-    return update_user(email, user)
+def update_user_information(email: str, req: UpdateUserInformationRequest):
+    return update_user(email, req.fullname, req.gender, req.year_of_birth)

@@ -49,7 +49,7 @@ def login(email: str, password: str):
                         "email": item["email"],
                         "fullname": item["fullname"],
                         "gender": item["gender"],
-                        "year_of_birth": item["year_of_birth"]
+                        "year_of_birth": str(item["year_of_birth"])
                     },
                     status_code=200
                 )
@@ -60,24 +60,24 @@ def login(email: str, password: str):
     except ClientError as e:
         return JSONResponse(content=e.response["Error"], status_code=500)
 
-def register(background_tasks: BackgroundTasks, user: User):
+def register(background_tasks: BackgroundTasks, email: str, password: str, fullname: str, gender: str, year_of_birth: int):
     try:
         response = table.query(
             IndexName="EmailIndex",
-            KeyConditionExpression=Key("email").eq(user.email)
+            KeyConditionExpression=Key("email").eq(email)
         )
         items = response["Items"]
 
         if items:
             return JSONResponse(content="Email already exists", status_code=409)
         else:
-            user.password = get_password_hash(user.password)
+            password = get_password_hash(password)
             item = User(
-                email=user.email,
-                password=user.password,
-                fullname=user.fullname,
-                gender=user.gender,
-                year_of_birth=user.year_of_birth,
+                email=email,
+                password=password,
+                fullname=fullname,
+                gender=gender,
+                year_of_birth=year_of_birth,
                 role="User").dict()
 
             table.put_item(Item=item)
@@ -227,7 +227,7 @@ def change_pwd(email: str, old_password: str, new_password: str):
         return JSONResponse(content=e.response["Error"], status_code=500)
 
 # Update user information
-def update_user(email: str, user: User):
+def update_user(email: str, fullname: str, gender: str, year_of_birth: int):
     try:
         response = table.query(
             IndexName="EmailIndex",
@@ -242,9 +242,9 @@ def update_user(email: str, user: User):
                 Key={"user_id": item["user_id"]},
                 UpdateExpression="set #fullname=:fullname, #gender=:gender, #year_of_birth=:year_of_birth",
                 ExpressionAttributeValues={
-                    ":fullname": user.fullname,
-                    ":gender": user.gender,
-                    ":year_of_birth": user.year_of_birth
+                    ":fullname": fullname,
+                    ":gender": gender,
+                    ":year_of_birth": year_of_birth
                 },
                 ExpressionAttributeNames={
                     "#fullname": "fullname",
